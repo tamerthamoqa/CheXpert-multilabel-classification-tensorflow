@@ -24,7 +24,7 @@ class NumpyEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def plot_metrics(model_history, stop=50):
+def plot_metrics(model_history, model_architecture, stop=50):
     fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(10, 4))
     axes.plot(range(stop), model_history['loss'], label='Training', color='#FF533D')
     axes.plot(range(stop), model_history['val_loss'], label='Validation', color='#03507E')
@@ -32,4 +32,4 @@ def plot_metrics(model_history, stop=50):
     axes.set_ylabel('Loss')
     axes.set_xlabel('Epoch')
     axes.legend(loc='upper right')
-    fig.savefig('train_val_losses.png', dpi=fig.dpi)
+    fig.savefig(f'{model_architecture}_train_val_losses.png', dpi=fig.dpi)
