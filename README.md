@@ -1,6 +1,7 @@
 # CheXpert-multilabel-classification-tensorflow
 __Operating System__: Ubuntu 18.04 (you may face issues importing the packages from the requirements.yml file if your OS differs).
 
+Code repository for training multi-label classification models on the [CheXpert](https://stanfordmlgroup.github.io/competitions/chexpert/) [1] Chest X-ray dataset.
 ### Training Model
 ```
     usage: train_multilabel_classification_model.py [-h] [--data_dir DATA_DIR]
@@ -67,7 +68,7 @@ __Operating System__: Ubuntu 18.04 (you may face issues importing the packages f
 
 
 ### References:
-* Irvin, J.A., Rajpurkar, P., Ko, M., Yu, Y., Ciurea-Ilcus, S., Chute, C., Marklund, H., Haghgoo, B., Ball, R.L., Shpanskaya, K.S., Seekins, J., Mong, D.A., Halabi, S.S., Sandberg, J.K., Jones, R.H., Larson, D.B., Langlotz, C., Patel, B.N., Lungren, M.P., & Ng, A. (2019). CheXpert: A Large Chest Radiograph Dataset with Uncertainty Labels and Expert Comparison. AAAI. [arXiv](https://arxiv.org/abs/1901.07031)
+* [1] Irvin, J.A., Rajpurkar, P., Ko, M., Yu, Y., Ciurea-Ilcus, S., Chute, C., Marklund, H., Haghgoo, B., Ball, R.L., Shpanskaya, K.S., Seekins, J., Mong, D.A., Halabi, S.S., Sandberg, J.K., Jones, R.H., Larson, D.B., Langlotz, C., Patel, B.N., Lungren, M.P., & Ng, A. (2019). CheXpert: A Large Chest Radiograph Dataset with Uncertainty Labels and Expert Comparison. AAAI. [arXiv](https://arxiv.org/abs/1901.07031)
 
 
 ### Hardware Specifications
