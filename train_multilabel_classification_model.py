@@ -30,8 +30,8 @@ parser.add_argument('--train_multi_gpu', default=False, type=bool,
 parser.add_argument('--num_gpus', default=1, type=int,
                     help="Set number of available GPUs for multi-gpu training, '--train_multi_gpu' must be also set to True  (default: 1)"
                     )
-parser.add_argument('--training_epochs', default=15, type=int,
-                    help="Required training epochs (default: 15)"
+parser.add_argument('--training_epochs', default=10, type=int,
+                    help="Required training epochs (default: 10)"
                     )
 parser.add_argument('--resume_train', default=False, type=bool,
                     help="If set to True, resume model training from model_path (default: False)"
@@ -193,16 +193,24 @@ def main():
     list_columns = list(train_df.columns)
     y_cols = list_columns[1::]  # First column is 'Path' column
 
+    training_dataset_mean = np.load("misc/training_dataset_mean_and_std_values/CheXpert_training_set_mean.npy")
+    training_dataset_std = np.load("misc/training_dataset_mean_and_std_values/CheXpert_training_set_std.npy")
+
     train_datagen = ImageDataGenerator(
-        rotation_range=20,
+        featurewise_center=True,  # Mean and standard deviation values of the training set will be loaded to the object
+        featurewise_std_normalization=True,
+        rotation_range=15,
         shear_range=0.2,
         zoom_range=0.2,
-        fill_mode='nearest',
+        fill_mode='constant',
         cval=0.0,
-        horizontal_flip=False,
-        vertical_flip=False,
-        rescale=1./255.
+        horizontal_flip=False,  # Some labels would be heavily affected by this change if it is True
+        vertical_flip=False,  # Not suitable for Chest X-ray images if it is True
     )
+
+    # Set training dataset mean and std values for feature_wise centering and std normalization
+    train_datagen.mean = training_dataset_mean
+    train_datagen.std = training_dataset_std
 
     train_datagenerator = train_datagen.flow_from_dataframe(
         dataframe=train_df,
@@ -219,8 +227,13 @@ def main():
     )
 
     val_datagen = ImageDataGenerator(
-        rescale=1./255.
+        featurewise_center=True,  # Mean and standard deviation values of the training set will be loaded to the object
+        featurewise_std_normalization=True
     )
+
+    # Set training dataset mean and std values for feature_wise centering and std normalization
+    val_datagen.mean = training_dataset_mean
+    val_datagen.std = training_dataset_std
 
     val_datagenerator = val_datagen.flow_from_dataframe(
         dataframe=val_df,
