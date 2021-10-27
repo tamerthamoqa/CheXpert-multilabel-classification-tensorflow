@@ -1,7 +1,14 @@
 # CheXpert-multilabel-classification-tensorflow
 __Operating System__: Ubuntu 18.04 (you may face issues importing the packages from the requirements.yml file if your OS differs).
 
-Code repository for training multi-label classification models on the [CheXpert](https://stanfordmlgroup.github.io/competitions/chexpert/) [1] Chest X-ray dataset.
+Code repository for training multi-label classification models on the [CheXpert](https://stanfordmlgroup.github.io/competitions/chexpert/) [[1](#references)] Chest X-ray dataset.
+
+
+### Dataset
+* CheXpert dataset original size (register your email and a download link will be sent as an email): [Official CheXpert Website](https://stanfordmlgroup.github.io/competitions/chexpert/)
+* CheXpert dataset resized to 512x512 with maintained aspect ratio (used in experiments): [Drive](https://drive.google.com/file/d/1ir6kGK1yhqZZK5-2W0_JMawmcNZGc6r5/view?usp=sharing)
+
+
 ### Training Model
 ```
     usage: train_multilabel_classification_model.py [-h] [--data_dir DATA_DIR]
