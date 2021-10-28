@@ -13,7 +13,6 @@ Code repository for training multi-label classification models on the [CheXpert]
 ```
     usage: train_multilabel_classification_model.py [-h] [--data_dir DATA_DIR]
                                                     [--model_architecture {densenet201,inceptionresnetv2,resnet152}]
-                                                    [--weighted_classes WEIGHTED_CLASSES]
                                                     [--train_multi_gpu TRAIN_MULTI_GPU]
                                                     [--num_gpus NUM_GPUS]
                                                     [--training_epochs TRAINING_EPOCHS]
@@ -37,10 +36,6 @@ Code repository for training multi-label classification models on the [CheXpert]
                             The required model architecture for training:
                             ('densenet201','inceptionresnetv2', 'resnet152'),
                             (default: 'densenet201')
-      --weighted_classes WEIGHTED_CLASSES
-                            If set to True, train model with sample weighting; the
-                            sample weights per class would be calculated from the
-                            training set by the Data Generator (default: True)
       --train_multi_gpu TRAIN_MULTI_GPU
                             If set to True, train model with multiple GPUs.
                             (default: False)
