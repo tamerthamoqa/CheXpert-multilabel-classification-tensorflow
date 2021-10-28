@@ -43,7 +43,7 @@ Code repository for training multi-label classification models on the [CheXpert]
                             --train_multi_gpu' must be also set to True (default:
                             1)
       --training_epochs TRAINING_EPOCHS
-                            Required training epochs (default: 10)
+                            Required training epochs (default: 25)
       --resume_train RESUME_TRAIN
                             If set to True, resume model training from model_path
                             (default: False)
