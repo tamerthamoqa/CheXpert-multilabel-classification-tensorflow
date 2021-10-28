@@ -28,8 +28,8 @@ parser.add_argument('--train_multi_gpu', default=False, type=bool,
 parser.add_argument('--num_gpus', default=1, type=int,
                     help="Set number of available GPUs for multi-gpu training, '--train_multi_gpu' must be also set to True  (default: 1)"
                     )
-parser.add_argument('--training_epochs', default=10, type=int,
-                    help="Required training epochs (default: 10)"
+parser.add_argument('--training_epochs', default=25, type=int,
+                    help="Required training epochs (default: 25)"
                     )
 parser.add_argument('--resume_train', default=False, type=bool,
                     help="If set to True, resume model training from model_path (default: False)"
