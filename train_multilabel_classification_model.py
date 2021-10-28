@@ -3,6 +3,7 @@ import json
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+import tensorflow.keras.backend as K
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
@@ -20,9 +21,6 @@ parser.add_argument('--data_dir', type=str, default="dataset/",
                     )
 parser.add_argument('--model_architecture', type=str, default="densenet201", choices=["densenet201", "inceptionresnetv2", "resnet152"],
                     help="The required model architecture for training: ('densenet201','inceptionresnetv2', 'resnet152'), (default: 'densenet201')"
-                    )
-parser.add_argument('--weighted_classes', default=True, type=bool,
-                    help="If set to True, train model with sample weighting; the sample weights per class would be calculated from the training set by the Data Generator (default: True)"
                     )
 parser.add_argument('--train_multi_gpu', default=False, type=bool,
                     help="If set to True, train model with multiple GPUs. (default: False)"
@@ -102,6 +100,67 @@ def set_model_architecture(model_architecture, image_height, image_width):
     print("Using {} model architecture.".format(model_architecture))
 
     return model
+
+
+def compute_class_weights(labels):
+    """
+    Note: Imported from the AI for Medicine Specialization course on Coursera: Assignment 1 Week 1.
+    Compute positive and negative weights for each class.
+
+    Args:
+        labels (np.array): matrix of labels, size (num_examples, num_classes)
+
+    Returns:
+        positive_weights (np.array): array of positive weights for each
+                                         class, size (num_classes)
+        negative_weights (np.array): array of negative weights for each
+                                         class, size (num_classes)
+    """
+    # total number of patients (rows).
+    N = labels.shape[0]
+
+    positive_frequencies = np.sum(labels, axis=0) / N
+    negative_frequencies = np.sum(labels == 0, axis=0) / N
+
+    positive_weights = negative_frequencies
+    negative_weights = positive_frequencies
+
+    return positive_weights, negative_weights
+
+
+def set_binary_crossentropy_weighted_loss(positive_weights, negative_weights, epsilon=1e-7):
+    """
+    Note: Imported from the AI for Medicine Specialization course on Coursera: Assignment 1 Week 1.
+    Returns weighted binary cross entropy loss function given negative weights and positive weights.
+
+    Args:
+      positive_weights (np.array): array of positive weights for each class, size (num_classes)
+      negative_weights (np.array): array of negative weights for each class, size (num_classes)
+
+    Returns:
+      weighted_loss (function): weighted loss function
+    """
+    def binary_crossentropy_weighted_loss(y_true, y_pred):
+        """
+        Returns weighted binary cross entropy loss value.
+
+        Args:
+            y_true (Tensor): Tensor of true labels, size is (num_examples, num_classes)
+            y_pred (Tensor): Tensor of predicted labels, size is (num_examples, num_classes)
+
+        Returns:
+            loss (Tensor): overall scalar loss summed across all classes
+        """
+        # initialize loss to zero
+        loss = 0.0
+
+        for i in range(len(positive_weights)):
+            # for each class, add average weighted loss for that class
+            loss += -1 * K.mean((positive_weights[i] * y_true[:, i] * K.log(y_pred[:, i] + epsilon) +
+                                 negative_weights[i] * (1 - y_true[:, i]) * K.log(1 - y_pred[:, i] + epsilon)))
+        return loss
+
+    return binary_crossentropy_weighted_loss
 
 
 def set_optimizer(optimizer, learning_rate, use_nesterov_sgd, use_amsgrad_adam):
@@ -258,6 +317,17 @@ def main():
         use_amsgrad_adam=use_amsgrad_adam
     )
 
+    positive_weights, negative_weights = compute_class_weights(labels=train_datagenerator.labels)
+    print(f"\nPositive Weights: {positive_weights}")
+    print(f"Negative Weights: {negative_weights}\n")
+
+    loss = set_binary_crossentropy_weighted_loss(
+        positive_weights=positive_weights,
+        negative_weights=negative_weights,
+        epsilon=1e-7
+    )
+
+    accuracy = tf.keras.metrics.BinaryAccuracy()
     auc = tf.keras.metrics.AUC(
         name="auc",
         multi_label=True
@@ -273,13 +343,13 @@ def main():
             with strategy.scope():
                 model = load_model(model_path)
                 # https://github.com/tensorflow/tensorflow/issues/45903#issuecomment-804973541
-                model.compile(optimizer=model.optimizer, metrics=[auc, "accuracy"], loss="binary_crossentropy")
+                model.compile(optimizer=model.optimizer, metrics=[auc, accuracy], loss=loss)
 
         # Single-GPU training
         else:
             model = load_model(model_path)
             # https://github.com/tensorflow/tensorflow/issues/45903#issuecomment-804973541
-            model.compile(optimizer=model.optimizer, metrics=[auc, "accuracy"], loss="binary_crossentropy")
+            model.compile(optimizer=model.optimizer, metrics=[auc, accuracy], loss=loss)
 
         # Change Learning Rate
         tf.keras.backend.set_value(model.optimizer.lr, learning_rate)
@@ -295,7 +365,7 @@ def main():
                     image_height=image_height,
                     image_width=image_width
                 )
-                model.compile(optimizer=optimizer, metrics=[auc, "accuracy"], loss="binary_crossentropy")
+                model.compile(optimizer=optimizer, metrics=[auc, accuracy], loss=loss)
         # Single GPU training
         else:
             model = set_model_architecture(
@@ -303,9 +373,9 @@ def main():
                 image_height=image_height,
                 image_width=image_width
             )
-            model.compile(optimizer=optimizer, metrics=[auc, "accuracy"], loss="binary_crossentropy")
+            model.compile(optimizer=optimizer, metrics=[auc, accuracy], loss=loss)
 
-    print(model.summary())
+    print(f"\n{model.summary()}\n")
 
     if train_multi_gpu:
         print("Training on Multi-GPU mode!\n")
@@ -313,21 +383,21 @@ def main():
         print("Training on Single-GPU mode!\n")
 
     reducelronplateau = ReduceLROnPlateau(
-        monitor="val_auc",
+        monitor="val_binary_crossentropy_weighted_loss",
         factor=0.1,
         patience=2,
         verbose=1,
-        mode="max",
+        mode="min",
         min_lr=1e-6
     )
 
     checkpoint = ModelCheckpoint(
         filepath=model_path,
-        monitor='val_auc',
+        monitor='val_binary_crossentropy_weighted_loss',
         verbose=1,
         save_best_only=True,
         save_weights_only=False,
-        mode='max'
+        mode='min'
     )
 
     fit = model.fit(
