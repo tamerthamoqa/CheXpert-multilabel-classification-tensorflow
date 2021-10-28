@@ -209,43 +209,43 @@ def main():
 
     train_df = pd.read_csv(
         filepath_or_buffer="labels/train_u-zeroes.csv",
-        dtype={  # Setting labels to type np.int32 was necessary for conversion to tf.Tensor object
+        dtype={  # Setting labels to type np.float32 was necessary for conversion to tf.Tensor object
             "Path": str,
-            "Atelectasis": np.int32,
-            "Cardiomegaly": np.int32,
-            "Consolidation": np.int32,
-            "Edema": np.int32,
-            "Pleural Effusion": np.int32,
-            "Pleural Other": np.int32,
-            "Pneumonia": np.int32,
-            "Pneumothorax": np.int32,
-            "Enlarged Cardiomediastinum": np.int32,
-            "Lung Opacity": np.int32,
-            "Lung Lesion": np.int32,
-            "Fracture": np.int32,
-            "Support Devices": np.int32,
-            "No Finding": np.int32
+            "Atelectasis": np.float32,
+            "Cardiomegaly": np.float32,
+            "Consolidation": np.float32,
+            "Edema": np.float32,
+            "Pleural Effusion": np.float32,
+            "Pleural Other": np.float32,
+            "Pneumonia": np.float32,
+            "Pneumothorax": np.float32,
+            "Enlarged Cardiomediastinum": np.float32,
+            "Lung Opacity": np.float32,
+            "Lung Lesion": np.float32,
+            "Fracture": np.float32,
+            "Support Devices": np.float32,
+            "No Finding": np.float32
         }
     )
 
     val_df = pd.read_csv(
         filepath_or_buffer="labels/validation_u-zeroes.csv",
-        dtype={  # Setting labels to type np.int32 was necessary for conversion to tf.Tensor object
+        dtype={  # Setting labels to type np.float32 was necessary for conversion to tf.Tensor object
             "Path": str,
-            "Atelectasis": np.int32,
-            "Cardiomegaly": np.int32,
-            "Consolidation": np.int32,
-            "Edema": np.int32,
-            "Pleural Effusion": np.int32,
-            "Pleural Other": np.int32,
-            "Pneumonia": np.int32,
-            "Pneumothorax": np.int32,
-            "Enlarged Cardiomediastinum": np.int32,
-            "Lung Opacity": np.int32,
-            "Lung Lesion": np.int32,
-            "Fracture": np.int32,
-            "Support Devices": np.int32,
-            "No Finding": np.int32
+            "Atelectasis": np.float32,
+            "Cardiomegaly": np.float32,
+            "Consolidation": np.float32,
+            "Edema": np.float32,
+            "Pleural Effusion": np.float32,
+            "Pleural Other": np.float32,
+            "Pneumonia": np.float32,
+            "Pneumothorax": np.float32,
+            "Enlarged Cardiomediastinum": np.float32,
+            "Lung Opacity": np.float32,
+            "Lung Lesion": np.float32,
+            "Fracture": np.float32,
+            "Support Devices": np.float32,
+            "No Finding": np.float32
         }
     )
 
@@ -383,7 +383,7 @@ def main():
         print("Training on Single-GPU mode!\n")
 
     reducelronplateau = ReduceLROnPlateau(
-        monitor="val_binary_crossentropy_weighted_loss",
+        monitor="val_loss",
         factor=0.1,
         patience=2,
         verbose=1,
@@ -393,7 +393,7 @@ def main():
 
     checkpoint = ModelCheckpoint(
         filepath=model_path,
-        monitor='val_binary_crossentropy_weighted_loss',
+        monitor='val_loss',
         verbose=1,
         save_best_only=True,
         save_weights_only=False,
