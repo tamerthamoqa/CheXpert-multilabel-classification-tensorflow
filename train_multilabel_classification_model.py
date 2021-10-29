@@ -37,8 +37,8 @@ parser.add_argument('--resume_train', default=False, type=bool,
 parser.add_argument('--optimizer', type=str, default="adam", choices=["sgd", "adam", "nadam"],
                     help="Required optimizer for training the model: ('sgd','adam','nadam'), (default: 'adam')"
                     )
-parser.add_argument('--lr', default=0.0001, type=float,
-                    help="Learning rate for the optimizer (default: 0.0001)"
+parser.add_argument('--lr', default=0.001, type=float,
+                    help="Learning rate for the optimizer (default: 0.001)"
                     )
 parser.add_argument('--use_nesterov_sgd', default=False, type=bool,
                     help="Use Nesterov momentum with SGD optimizer: ('True', 'False') (default: False)"
@@ -383,21 +383,21 @@ def main():
         print("Training on Single-GPU mode!\n")
 
     reducelronplateau = ReduceLROnPlateau(
-        monitor="val_loss",
+        monitor="val_auc",
         factor=0.1,
-        patience=2,
+        patience=5,
         verbose=1,
-        mode="min",
+        mode="max",
         min_lr=1e-6
     )
 
     checkpoint = ModelCheckpoint(
         filepath=model_path,
-        monitor='val_loss',
+        monitor='val_auc',
         verbose=1,
         save_best_only=True,
         save_weights_only=False,
-        mode='min'
+        mode='max'
     )
 
     fit = model.fit(
