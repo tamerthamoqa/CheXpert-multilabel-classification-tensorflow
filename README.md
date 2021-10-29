@@ -50,7 +50,7 @@ Code repository for training multi-label classification models on the [CheXpert]
       --optimizer {sgd,adam,nadam}
                             Required optimizer for training the model:
                             ('sgd','adam','nadam'), (default: 'adam')
-      --lr LR               Learning rate for the optimizer (default: 0.0001)
+      --lr LR               Learning rate for the optimizer (default: 0.001)
       --use_nesterov_sgd USE_NESTEROV_SGD
                             Use Nesterov momentum with SGD optimizer: ('True',
                             'False') (default: False)
