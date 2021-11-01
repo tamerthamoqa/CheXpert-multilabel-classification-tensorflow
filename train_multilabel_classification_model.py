@@ -327,12 +327,6 @@ def main():
         epsilon=1e-7
     )
 
-    accuracy = tf.keras.metrics.BinaryAccuracy()
-    auc = tf.keras.metrics.AUC(
-        name="auc",
-        multi_label=True
-    )
-
     model_path = f"{model_architecture}.h5"
 
     # Path 1: Resume training from model checkpoint
@@ -341,12 +335,25 @@ def main():
         if train_multi_gpu:
             strategy = tf.distribute.MirroredStrategy(devices=gpu_devices)
             with strategy.scope():
+                # Metrics need to be instantiated within the mirrored strategy scope
+                accuracy = tf.keras.metrics.BinaryAccuracy()
+                auc = tf.keras.metrics.AUC(
+                    name="auc",
+                    multi_label=True
+                )
+
                 model = load_model(model_path)
                 # https://github.com/tensorflow/tensorflow/issues/45903#issuecomment-804973541
                 model.compile(optimizer=model.optimizer, metrics=[auc, accuracy], loss=loss)
 
         # Single-GPU training
         else:
+            accuracy = tf.keras.metrics.BinaryAccuracy()
+            auc = tf.keras.metrics.AUC(
+                name="auc",
+                multi_label=True
+            )
+
             model = load_model(model_path)
             # https://github.com/tensorflow/tensorflow/issues/45903#issuecomment-804973541
             model.compile(optimizer=model.optimizer, metrics=[auc, accuracy], loss=loss)
@@ -360,6 +367,13 @@ def main():
         if train_multi_gpu:
             strategy = tf.distribute.MirroredStrategy(devices=gpu_devices)
             with strategy.scope():
+                # Metrics need to be instantiated within the mirrored strategy scope
+                accuracy = tf.keras.metrics.BinaryAccuracy()
+                auc = tf.keras.metrics.AUC(
+                    name="auc",
+                    multi_label=True
+                )
+
                 model = set_model_architecture(
                     model_architecture=model_architecture,
                     image_height=image_height,
@@ -368,6 +382,12 @@ def main():
                 model.compile(optimizer=optimizer, metrics=[auc, accuracy], loss=loss)
         # Single GPU training
         else:
+            accuracy = tf.keras.metrics.BinaryAccuracy()
+            auc = tf.keras.metrics.AUC(
+                name="auc",
+                multi_label=True
+            )
+
             model = set_model_architecture(
                 model_architecture=model_architecture,
                 image_height=image_height,
