@@ -191,8 +191,8 @@ def main():
     list_columns = list(train_df.columns)
     y_cols = list_columns[1::]  # First column is 'Path' column
 
-    training_dataset_mean = np.load("training_dataset_mean_and_std_values/CheXpert_training_set_mean.npy")
-    training_dataset_std = np.load("training_dataset_mean_and_std_values/CheXpert_training_set_std.npy")
+    training_dataset_mean = np.load("calculated_chexpert_training_dataset_mean_and_std_values/CheXpert_training_set_mean.npy")
+    training_dataset_std = np.load("calculated_chexpert_training_dataset_mean_and_std_values/CheXpert_training_set_std.npy")
 
     train_datagen = ImageDataGenerator(
         featurewise_center=True,  # Mean and standard deviation values of the training set will be loaded to the object
