@@ -43,14 +43,14 @@ Code repository for training multi-label classification models on the [CheXpert]
                             --train_multi_gpu' must be also set to True (default:
                             1)
       --training_epochs TRAINING_EPOCHS
-                            Required training epochs (default: 25)
+                            Required training epochs (default: 15)
       --resume_train RESUME_TRAIN
                             If set to True, resume model training from model_path
                             (default: False)
       --optimizer {sgd,adam,nadam}
                             Required optimizer for training the model:
                             ('sgd','adam','nadam'), (default: 'adam')
-      --lr LR               Learning rate for the optimizer (default: 0.001)
+      --lr LR               Learning rate for the optimizer (default: 0.0001)
       --use_nesterov_sgd USE_NESTEROV_SGD
                             Use Nesterov momentum with SGD optimizer: ('True',
                             'False') (default: False)
