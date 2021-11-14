@@ -28,8 +28,8 @@ parser.add_argument('--train_multi_gpu', default=False, type=bool,
 parser.add_argument('--num_gpus', default=1, type=int,
                     help="Set number of available GPUs for multi-gpu training, '--train_multi_gpu' must be also set to True  (default: 1)"
                     )
-parser.add_argument('--training_epochs', default=25, type=int,
-                    help="Required training epochs (default: 25)"
+parser.add_argument('--training_epochs', default=15, type=int,
+                    help="Required training epochs (default: 15)"
                     )
 parser.add_argument('--resume_train', default=False, type=bool,
                     help="If set to True, resume model training from model_path (default: False)"
@@ -37,8 +37,8 @@ parser.add_argument('--resume_train', default=False, type=bool,
 parser.add_argument('--optimizer', type=str, default="adam", choices=["sgd", "adam", "nadam"],
                     help="Required optimizer for training the model: ('sgd','adam','nadam'), (default: 'adam')"
                     )
-parser.add_argument('--lr', default=0.001, type=float,
-                    help="Learning rate for the optimizer (default: 0.001)"
+parser.add_argument('--lr', default=0.0001, type=float,
+                    help="Learning rate for the optimizer (default: 0.0001)"
                     )
 parser.add_argument('--use_nesterov_sgd', default=False, type=bool,
                     help="Use Nesterov momentum with SGD optimizer: ('True', 'False') (default: False)"
@@ -197,11 +197,9 @@ def main():
     train_datagen = ImageDataGenerator(
         featurewise_center=True,  # Mean and standard deviation values of the training set will be loaded to the object
         featurewise_std_normalization=True,
-        rotation_range=15,
-        shear_range=0.2,
-        zoom_range=0.2,
+        rotation_range=10,
+        cval=0,
         fill_mode='constant',
-        cval=0.0,
         horizontal_flip=False,  # Some labels would be heavily affected by this change if it is True
         vertical_flip=False  # Not suitable for Chest X-ray images if it is True
     )
@@ -215,7 +213,6 @@ def main():
         directory=data_dir,
         x_col='Path',
         y_col=y_cols,
-        weight_col=None,
         target_size=(512, 512),
         color_mode='grayscale',
         class_mode='raw',
@@ -238,11 +235,11 @@ def main():
         directory=data_dir,
         x_col='Path',
         y_col=y_cols,
-        weight_col=None,
         target_size=(512, 512),
         color_mode='grayscale',
         class_mode='raw',
         batch_size=batch_size,
+        shuffle=False,
         validate_filenames=True
     )
 
@@ -275,7 +272,6 @@ def main():
             strategy = tf.distribute.MirroredStrategy(devices=gpu_devices)
             with strategy.scope():
                 # Metrics need to be instantiated within the mirrored strategy scope
-                accuracy = tf.keras.metrics.BinaryAccuracy()
                 auc = tf.keras.metrics.AUC(
                     name="auc",
                     multi_label=True
@@ -288,11 +284,10 @@ def main():
                     }
                 )
                 # https://github.com/tensorflow/tensorflow/issues/45903#issuecomment-804973541
-                model.compile(optimizer=model.optimizer, metrics=[auc, accuracy], loss=loss)
+                model.compile(optimizer=model.optimizer, metrics=[auc, "binary_accuracy", "accuracy"], loss=loss)
 
         # Single-GPU training
         else:
-            accuracy = tf.keras.metrics.BinaryAccuracy()
             auc = tf.keras.metrics.AUC(
                 name="auc",
                 multi_label=True
@@ -305,7 +300,7 @@ def main():
                 }
             )
             # https://github.com/tensorflow/tensorflow/issues/45903#issuecomment-804973541
-            model.compile(optimizer=model.optimizer, metrics=[auc, accuracy], loss=loss)
+            model.compile(optimizer=model.optimizer, metrics=[auc, "binary_accuracy", "accuracy"], loss=loss)
 
         # Change Learning Rate
         tf.keras.backend.set_value(model.optimizer.lr, learning_rate)
@@ -317,7 +312,6 @@ def main():
             strategy = tf.distribute.MirroredStrategy(devices=gpu_devices)
             with strategy.scope():
                 # Metrics need to be instantiated within the mirrored strategy scope
-                accuracy = tf.keras.metrics.BinaryAccuracy()
                 auc = tf.keras.metrics.AUC(
                     name="auc",
                     multi_label=True
@@ -328,10 +322,9 @@ def main():
                     image_height=image_height,
                     image_width=image_width
                 )
-                model.compile(optimizer=optimizer, metrics=[auc, accuracy], loss=loss)
+                model.compile(optimizer=optimizer, metrics=[auc, "binary_accuracy", "accuracy"], loss=loss)
         # Single GPU training
         else:
-            accuracy = tf.keras.metrics.BinaryAccuracy()
             auc = tf.keras.metrics.AUC(
                 name="auc",
                 multi_label=True
@@ -342,7 +335,7 @@ def main():
                 image_height=image_height,
                 image_width=image_width
             )
-            model.compile(optimizer=optimizer, metrics=[auc, accuracy], loss=loss)
+            model.compile(optimizer=optimizer, metrics=[auc, "binary_accuracy", "accuracy"], loss=loss)
 
     print(f"\n{model.summary()}\n")
 
