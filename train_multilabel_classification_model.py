@@ -94,7 +94,7 @@ def set_model_architecture(model_architecture, image_height, image_width):
 
     x = base_model.output
     x = GlobalAveragePooling2D()(x)
-    predictions = Dense(units=14, activation="sigmoid")(x)  # For multi-label classification
+    predictions = Dense(units=5, activation="sigmoid")(x)  # For multi-label classification for the five CheXpert competition labels
     model = Model(inputs=base_model.input, outputs=predictions)
 
     print("Using {} model architecture.".format(model_architecture))
@@ -147,58 +147,41 @@ def main():
     num_workers = args.num_workers
 
     train_df = pd.read_csv(
-        filepath_or_buffer="labels/train_u-zeroes.csv",
+        filepath_or_buffer="labels/train_validation_split_data/train_u-zeroes_chexpert.csv",
         dtype={  # Setting labels to type np.float32 was necessary for conversion to tf.Tensor object
             "Path": str,
             "Atelectasis": np.float32,
             "Cardiomegaly": np.float32,
             "Consolidation": np.float32,
             "Edema": np.float32,
-            "Pleural Effusion": np.float32,
-            "Pleural Other": np.float32,
-            "Pneumonia": np.float32,
-            "Pneumothorax": np.float32,
-            "Enlarged Cardiomediastinum": np.float32,
-            "Lung Opacity": np.float32,
-            "Lung Lesion": np.float32,
-            "Fracture": np.float32,
-            "Support Devices": np.float32,
-            "No Finding": np.float32
+            "Pleural Effusion": np.float32
         }
     )
 
     val_df = pd.read_csv(
-        filepath_or_buffer="labels/validation_u-zeroes.csv",
+        filepath_or_buffer="labels/train_validation_split_data/validation_u-zeroes_chexpert.csv",
         dtype={  # Setting labels to type np.float32 was necessary for conversion to tf.Tensor object
             "Path": str,
             "Atelectasis": np.float32,
             "Cardiomegaly": np.float32,
             "Consolidation": np.float32,
             "Edema": np.float32,
-            "Pleural Effusion": np.float32,
-            "Pleural Other": np.float32,
-            "Pneumonia": np.float32,
-            "Pneumothorax": np.float32,
-            "Enlarged Cardiomediastinum": np.float32,
-            "Lung Opacity": np.float32,
-            "Lung Lesion": np.float32,
-            "Fracture": np.float32,
-            "Support Devices": np.float32,
-            "No Finding": np.float32
+            "Pleural Effusion": np.float32
         }
     )
 
     list_columns = list(train_df.columns)
     y_cols = list_columns[1::]  # First column is 'Path' column
 
-    training_dataset_mean = np.load("calculated_chexpert_training_dataset_mean_and_std_values/CheXpert_training_set_mean.npy")
-    training_dataset_std = np.load("calculated_chexpert_training_dataset_mean_and_std_values/CheXpert_training_set_std.npy")
+    training_dataset_mean = np.load("misc/calculated_chexpert_training_dataset_mean_and_std_values/CheXpert_training_set_mean.npy")
+    training_dataset_std = np.load("misc/calculated_chexpert_training_dataset_mean_and_std_values/CheXpert_training_set_std.npy")
 
     train_datagen = ImageDataGenerator(
         featurewise_center=True,  # Mean and standard deviation values of the training set will be loaded to the object
         featurewise_std_normalization=True,
         rotation_range=10,
-        cval=0,
+        shear_range=0.1,
+        cval=0.0,
         fill_mode='constant',
         horizontal_flip=False,  # Some labels would be heavily affected by this change if it is True
         vertical_flip=False  # Not suitable for Chest X-ray images if it is True
