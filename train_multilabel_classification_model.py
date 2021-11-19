@@ -28,17 +28,17 @@ parser.add_argument('--train_multi_gpu', default=False, type=bool,
 parser.add_argument('--num_gpus', default=1, type=int,
                     help="Set number of available GPUs for multi-gpu training, '--train_multi_gpu' must be also set to True  (default: 1)"
                     )
-parser.add_argument('--training_epochs', default=15, type=int,
-                    help="Required training epochs (default: 15)"
+parser.add_argument('--training_epochs', default=30, type=int,
+                    help="Required training epochs (default: 30)"
                     )
 parser.add_argument('--resume_train', default=False, type=bool,
                     help="If set to True, resume model training from model_path (default: False)"
                     )
-parser.add_argument('--optimizer', type=str, default="adam", choices=["sgd", "adam", "nadam"],
-                    help="Required optimizer for training the model: ('sgd','adam','nadam'), (default: 'adam')"
+parser.add_argument('--optimizer', type=str, default="nadam", choices=["sgd", "adam", "nadam"],
+                    help="Required optimizer for training the model: ('sgd','adam','nadam'), (default: 'nadam')"
                     )
-parser.add_argument('--lr', default=0.0001, type=float,
-                    help="Learning rate for the optimizer (default: 0.0001)"
+parser.add_argument('--lr', default=0.001, type=float,
+                    help="Learning rate for the optimizer (default: 0.001)"
                     )
 parser.add_argument('--use_nesterov_sgd', default=False, type=bool,
                     help="Use Nesterov momentum with SGD optimizer: ('True', 'False') (default: False)"
@@ -55,8 +55,8 @@ parser.add_argument('--image_height', default=512, type=int,
 parser.add_argument('--image_width', default=512, type=int,
                     help="Input image width (default: 512)"
                     )
-parser.add_argument('--num_workers', default=4, type=int,
-                    help="Number of workers for fit_generator (default: 4)"
+parser.add_argument('--num_workers', default=2, type=int,
+                    help="Number of workers for fit_generator (default: 2)"
                     )
 args = parser.parse_args()
 
@@ -94,7 +94,7 @@ def set_model_architecture(model_architecture, image_height, image_width):
 
     x = base_model.output
     x = GlobalAveragePooling2D()(x)
-    predictions = Dense(units=5, activation="sigmoid")(x)  # For multi-label classification for the five CheXpert competition labels
+    predictions = Dense(units=14, activation="sigmoid")(x)  # For multi-label classification for the five CheXpert competition labels
     model = Model(inputs=base_model.input, outputs=predictions)
 
     print("Using {} model architecture.".format(model_architecture))
@@ -147,26 +147,44 @@ def main():
     num_workers = args.num_workers
 
     train_df = pd.read_csv(
-        filepath_or_buffer="labels/train_validation_split_data/train_u-zeroes_chexpert.csv",
+        filepath_or_buffer="labels/train_validation_split_data/train_u-zeroes.csv",
         dtype={  # Setting labels to type np.float32 was necessary for conversion to tf.Tensor object
             "Path": str,
             "Atelectasis": np.float32,
             "Cardiomegaly": np.float32,
             "Consolidation": np.float32,
             "Edema": np.float32,
-            "Pleural Effusion": np.float32
+            "Pleural Effusion": np.float32,
+            "Pleural Other": np.float32,
+            "Pneumonia": np.float32,
+            "Pneumothorax": np.float32,
+            "Enlarged Cardiomediastinum": np.float32,
+            "Lung Opacity": np.float32,
+            "Lung Lesion": np.float32,
+            "Fracture": np.float32,
+            "Support Devices": np.float32,
+            "No Finding": np.float32
         }
     )
 
     val_df = pd.read_csv(
-        filepath_or_buffer="labels/train_validation_split_data/validation_u-zeroes_chexpert.csv",
+        filepath_or_buffer="labels/train_validation_split_data/validation_u-zeroes.csv",
         dtype={  # Setting labels to type np.float32 was necessary for conversion to tf.Tensor object
             "Path": str,
             "Atelectasis": np.float32,
             "Cardiomegaly": np.float32,
             "Consolidation": np.float32,
             "Edema": np.float32,
-            "Pleural Effusion": np.float32
+            "Pleural Effusion": np.float32,
+            "Pleural Other": np.float32,
+            "Pneumonia": np.float32,
+            "Pneumothorax": np.float32,
+            "Enlarged Cardiomediastinum": np.float32,
+            "Lung Opacity": np.float32,
+            "Lung Lesion": np.float32,
+            "Fracture": np.float32,
+            "Support Devices": np.float32,
+            "No Finding": np.float32
         }
     )
 
@@ -181,6 +199,7 @@ def main():
         featurewise_std_normalization=True,
         rotation_range=10,
         shear_range=0.1,
+        zoom_range=0.1,
         cval=0.0,
         fill_mode='constant',
         horizontal_flip=False,  # Some labels would be heavily affected by this change if it is True
