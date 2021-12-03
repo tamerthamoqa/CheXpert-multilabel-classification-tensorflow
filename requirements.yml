@@ -185,4 +185,6 @@ dependencies:
   - zipp=3.6.0=pyhd3eb1b0_0
   - zlib=1.2.11=h7b6447c_3
   - zstd=1.4.9=haebb681_0
+  - pip:
+    - opencv-python==4.5.4.60
 prefix: /home/tamer/anaconda3/envs/chexpert
