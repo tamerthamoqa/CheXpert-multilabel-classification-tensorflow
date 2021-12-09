@@ -35,6 +35,22 @@ Calculating multilabel classification report, multilabel confusion matrix, ROC c
 ### 3- Ensemble Model (Average Predictions Ensemble)
 ![ensemble-model-roc](testing_trained_models/roc_ensemble_model_competition_labels.png "Ensemble Model ROC Curve - Competition labels")
 
+### Epoch history of best performing epoch per model
+#### 1- DenseNet-201
+```
+    Epoch 27/30
+    11171/11171 [==============================] - 7353s 658ms/step - loss: 1.3676 - auc: 0.8535 - binary_accuracy: 0.7630 - accuracy: 0.2744 - val_loss: 1.6275 - val_auc: 0.7947 - val_binary_accuracy: 0.7521 - val_accuracy: 0.2362
+
+    Epoch 00027: val_auc improved from 0.78949 to 0.79468, saving model to densenet201.h5
+```
+#### 2- Inception-ResNet-V2
+```
+    Epoch 19/30
+    11171/11171 [==============================] - 8441s 756ms/step - loss: 1.4735 - auc: 0.8223 - binary_accuracy: 0.7384 - accuracy: 0.2599 - val_loss: 1.5879 - val_auc: 0.7946 - val_binary_accuracy: 0.7441 - val_accuracy: 0.2496
+
+    Epoch 00019: val_auc improved from 0.78585 to 0.79461, saving model to inceptionresnetv2.h5
+```
+
 ### Training Model
 ```
     usage: train_multilabel_classification_model.py [-h] [--data_dir DATA_DIR]
