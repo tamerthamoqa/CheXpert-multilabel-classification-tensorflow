@@ -10,7 +10,7 @@ Conducted operations on the dataset:
 * The official validation set was used as the "test" set for the training experiments.
 * __U-zeroes__ method was used on the dataset; all instances of the 'uncertain' label were mapped as zeroes.
 
-A DenseNet-201 and Inception-ResNet-V2 convolutional neural network models were trained on the full 14 CheXpert labels using the default training hyperparameters in '_train_multilabel_classification_model.py_'. An Ensemble model was created from the trained models in this [jupyter notebook](https://github.com/tamerthamoqa/CheXpert-multilabel-classification-tensorflow/blob/master/testing_trained_models/creating_ensemble_model.ipynb) (Average Predictions Ensemble) and tested on the validation and "test" sets.
+A DenseNet-201 and Inception-ResNet-V2 convolutional neural network models were trained on the full 14 CheXpert labels using the default training hyperparameters in '_train_multilabel_classification_model.py_' with class weighted binary crossentropy loss training. An Ensemble model was created from the trained models in this [jupyter notebook](https://github.com/tamerthamoqa/CheXpert-multilabel-classification-tensorflow/blob/master/testing_trained_models/creating_ensemble_model.ipynb) (Average Predictions Ensemble) and tested on the validation and "test" sets.
 
 Please report any errors or issues. Feedback and suggestions would be greatly appreciated.
 
