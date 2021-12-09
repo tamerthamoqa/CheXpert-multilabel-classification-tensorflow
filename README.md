@@ -1,13 +1,39 @@
 # CheXpert-multilabel-classification-tensorflow
 __Operating System__: Ubuntu 18.04 (you may face issues importing the packages from the requirements.yml file if your OS differs).
 
-Code repository for training multi-label classification models on the [CheXpert](https://stanfordmlgroup.github.io/competitions/chexpert/) [[1](#references)] Chest X-ray dataset.
+Code repository for training multi-label classification models on the [CheXpert](https://stanfordmlgroup.github.io/competitions/chexpert/) [[1](#references)] Chest X-ray dataset containing 224,316 Chest X-ray images from Stanford Hospital containing 14 labels (5 labels for the competition).
+The training set containing 223,414 Chest X-ray images and validation set containing 234 Chest X-ray images and the rest of the images being the official CheXpert competition test set.
+
+Conducted operations on the dataset:
+* The dataset was resized to image sizes 512x512 with maintained aspect ratio using this [script](https://github.com/tamerthamoqa/CheXpert-multilabel-classification-tensorflow/blob/master/misc/resize_image_folder_keep_aspect_ratio.py).
+* A random __80/20 train/validation__ split was conducted on the training set in this [jupyter notebook](https://github.com/tamerthamoqa/CheXpert-multilabel-classification-tensorflow/blob/master/misc/creating_train_validation_csv_labels/creating_train_validation_labels_u-zeroes.ipynb): 178,731 Chest X-ray images for the training set, 44,683 Chest X-ray images for the validation set.
+* The official validation set was used as the "test" set for the training experiments.
+* __U-zeroes__ method was used on the dataset; all instances of the 'uncertain' label were mapped as zeroes.
+
+A DenseNet-201 and Inception-ResNet-V2 convolutional neural network models were trained on the full 14 CheXpert labels using the default training hyperparameters in '_train_multilabel_classification_model.py_'. An Ensemble model was created from the trained models in this [jupyter notebook](https://github.com/tamerthamoqa/CheXpert-multilabel-classification-tensorflow/blob/master/testing_trained_models/creating_ensemble_model.ipynb) (Average Predictions Ensemble) and tested on the validation and "test" sets.
+
+Please report any errors or issues. Feedback and suggestions would be greatly appreciated.
+
+### Dataset Download
+* CheXpert dataset original size (register your email and a download link will be sent as an email, ~450 GBs): [Official CheXpert Website](https://stanfordmlgroup.github.io/competitions/chexpert/)
+* CheXpert dataset resized to 512x512 with maintained aspect ratio (__used in experiments__, ~ 45 GBs): [Drive](https://drive.google.com/file/d/1ir6kGK1yhqZZK5-2W0_JMawmcNZGc6r5/view?usp=sharing)
 
 
-### Dataset
-* CheXpert dataset original size (register your email and a download link will be sent as an email): [Official CheXpert Website](https://stanfordmlgroup.github.io/competitions/chexpert/)
-* CheXpert dataset resized to 512x512 with maintained aspect ratio (used in experiments): [Drive](https://drive.google.com/file/d/1ir6kGK1yhqZZK5-2W0_JMawmcNZGc6r5/view?usp=sharing)
+### Experiment Results
+Calculating multilabel classification report, multilabel confusion matrix, ROC curve test metrics for the full 14 labels and the 5 compeition labels:
+* Validation set: [jupyter notebook](https://github.com/tamerthamoqa/CheXpert-multilabel-classification-tensorflow/blob/master/testing_trained_models/calculating_test_metrics_on_validation_set.ipynb)
+* "Test" set (official validation set): [jupyter notebook](https://github.com/tamerthamoqa/CheXpert-multilabel-classification-tensorflow/blob/master/testing_trained_models/calculating_test_metrics_on_official_chexpert_validation_set.ipynb)
 
+### Official validation set ("test" set) ROC Curves for the five competition labels (Atelectasis, Cardiomegaly, Consolidation, Edema, Pleural Effusion):
+
+### 1- DenseNet-201
+![densenet201-roc](testing_trained_models/roc_densenet201_competition_labels.png "DenseNet-201 ROC Curve - Competition labels")
+
+### 2- Inception-ResNet-V2
+![inceptionresnetv2-roc](testing_trained_models/roc_inceptionresnetv2_competition_labels.png "Inception-ResNet-V2 ROC Curve - Competition labels")
+
+### 3- Ensemble Model (Average Predictions Ensemble)
+![ensemble-model-roc](testing_trained_models/roc_ensemble_model_competition_labels.png "Ensemble Model ROC Curve - Competition labels")
 
 ### Training Model
 ```
