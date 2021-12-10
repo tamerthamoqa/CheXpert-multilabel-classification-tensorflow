@@ -13,7 +13,7 @@ Conducted operations on the dataset:
 A __DenseNet-201__ and __Inception-ResNet-V2__ multi-label classification convolutional neural network models were trained on the full 14 CheXpert labels:
 * The default training hyperparameters in '_train_multilabel_classification_model.py_' were used.
 * __Class weighted binary crossentropy loss__ training was used.
-* The training set mean and standard deviation values to center and standardize the input images were used (__featurewise centering and standard deviation normalization__).
+* The training set mean and standard deviation values were used to center and standardize the input images (__featurewise centering and standard deviation normalization__).
 * An __Ensemble model__ was created from the trained models in this [jupyter notebook](https://github.com/tamerthamoqa/CheXpert-multilabel-classification-tensorflow/blob/master/testing_trained_models/creating_ensemble_model.ipynb) (Average Predictions Ensemble) and tested on the validation and "test" sets.
 
 Please report any errors or issues. Feedback and suggestions would be greatly appreciated.
