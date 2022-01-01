@@ -2,7 +2,7 @@
 __Operating System__: Ubuntu 18.04 (you may face issues importing the packages from the requirements.yml file if your OS differs).
 
 Code repository for training multi-label classification models on the [CheXpert](https://stanfordmlgroup.github.io/competitions/chexpert/) [[1](#references)] Chest X-ray dataset containing 224,316 Chest X-ray images from Stanford Hospital containing 14 labels (5 labels for the competition).
-The training set containing 223,316 Chest X-ray images and validation set containing 234 Chest X-ray images and the rest of the images being the official CheXpert competition test set.
+The training set containing 223,414 Chest X-ray images and validation set containing 234 Chest X-ray images and the rest of the images being the official CheXpert competition test set.
 
 Conducted operations on the dataset:
 * The dataset was resized to image sizes 512x512 with maintained aspect ratio using this [script](https://github.com/tamerthamoqa/CheXpert-multilabel-classification-tensorflow/blob/master/misc/resize_image_folder_keep_aspect_ratio.py).
